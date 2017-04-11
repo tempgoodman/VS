@@ -1,0 +1,41 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading.Tasks;
+using NewDITest.WebReference;
+using System.Reflection;
+
+namespace NewDITest
+{
+    public class RunDI
+    {
+       
+        public void eeee9()
+        {
+            string abc = "EDI_Commercial_Invoice";
+
+            string typeName = "NewDITest.WebReference.EDI_Commercial_Invoice_GlobalVariables";
+            Batch_Jobs bj = new Batch_Jobs();
+            Type type = bj.GetType();
+//Get Method Type
+            MethodInfo meth = type.GetMethod(abc);
+            Type type2 = Type.GetType(typeName);
+
+//Create variable and call the constructor
+            ConstructorInfo ctor = type2.GetConstructor(new Type[] { });
+            Object var = ctor.Invoke(new object[] { });
+
+//Assign method to event handler
+            var rdi = new RunDI();
+            var eventinfo = bj.GetType().GetEvent("EDI_Commercial_InvoiceCompleted");
+            var methodInfo = rdi.GetType().GetMethod("Complete");
+            Delegate handler = Delegate.CreateDelegate(eventinfo.EventHandlerType, bj, methodInfo);
+            eventinfo.AddEventHandler(bj, handler);
+
+//Invoke the method           
+            var result = meth.Invoke(bj, (new object[] { var }));
+        }
+    }
+}
